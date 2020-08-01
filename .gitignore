@@ -1,0 +1,10 @@
+# ignore all files without extension (binaries)
+# must always stay ontop!
+*
+!*.*
+!*/
+
+# normal .gitignore stuff
+private.*
+*.hi
+*.o

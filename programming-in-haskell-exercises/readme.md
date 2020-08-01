@@ -1,0 +1,1 @@
+Containing solutions to the exercises given in the book "Programmin in Haskell"
