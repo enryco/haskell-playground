@@ -35,8 +35,8 @@ potentials :: Colony -> Colony
 potentials []     = []
 potentials colony =  adjacents (head colony) ++ potentials (tail colony)
 
-groupSortWrapPotentias :: GridSize -> Colony -> [[Pos]]
-groupSortWrapPotentias gridSize colony = group (sort (wrapGrid gridSize (potentials colony)))
+groupSortWrapPotentials :: GridSize -> Colony -> [[Pos]]
+groupSortWrapPotentials gridSize colony = group (sort (wrapGrid gridSize (potentials colony)))
 
 countPotentials :: [[Pos]] -> [(Pos,Int)]
 countPotentials [] = []
@@ -49,7 +49,7 @@ life cs ((p,n):pots)| p `elem` cs && n >= 2 && n <= 3 = p:life cs pots -- surviv
                     | otherwise                       = life cs pots   -- dies
 
 nextGen :: GridSize -> Colony -> Colony
-nextGen gridSize colony = life colony (countPotentials $ groupSortWrapPotentias gridSize colony)
+nextGen gridSize colony = life colony (countPotentials $ groupSortWrapPotentials gridSize colony)
 
 ----------------
 -- IO ACTIONS --
