@@ -18,38 +18,38 @@ glider       = [(3,2), (4,3), (5,3),(4,4),(3,4)] :: Colony
 inc :: Int -> Int
 inc = (+1)
 
-putBack :: GridSize -> Pos -> Pos
-putBack (width, height) (x,y) = ((x + width) `mod` width, (y + height) `mod` height)
+wrap :: GridSize -> Pos -> Pos
+wrap (width, height) (x,y) = ((x + width) `mod` width, (y + height) `mod` height)
 
-dontFallOffTheGrid :: GridSize -> [Pos] -> [Pos]
-dontFallOffTheGrid gridSize = map (putBack gridSize)
+wrapGrid :: GridSize -> [Pos] -> [Pos]
+wrapGrid gridSize = map (wrap gridSize)
 
-getNextToPos :: Pos -> [Pos]
-getNextToPos (x,y) = [(x+offset_x,y+offset_y) | 
+adjacents :: Pos -> [Pos]
+adjacents (x,y) = [(x+offset_x,y+offset_y) | 
   offset_x <- [-1..1],
   offset_y <- [-1..1],
   (offset_x,offset_y) /= (0,0)]
 
 
-potentialsOf :: Colony -> Colony
-potentialsOf []     = []
-potentialsOf colony =  getNextToPos (head colony) ++ potentialsOf (tail colony)
+potentials :: Colony -> Colony
+potentials []     = []
+potentials colony =  adjacents (head colony) ++ potentials (tail colony)
 
-accumulatedPotentialsOff :: GridSize -> Colony -> [[Pos]]
-accumulatedPotentialsOff gridSize colony = group (sort (dontFallOffTheGrid gridSize (potentialsOf colony)))
+groupSortWrapPotentias :: GridSize -> Colony -> [[Pos]]
+groupSortWrapPotentias gridSize colony = group (sort (wrapGrid gridSize (potentials colony)))
 
 countPotentials :: [[Pos]] -> [(Pos,Int)]
 countPotentials [] = []
 countPotentials (ps:pss) = (head ps, length ps):countPotentials pss
 
-birthOrAlive :: Colony -> [(Pos,Int)] -> [Pos]
-birthOrAlive _ [] = []
-birthOrAlive cs ((p,n):pots) | p `elem` cs && n >= 2 && n <= 3 = p:birthOrAlive cs pots
-                             | not (elem p cs) && n == 3       = p:birthOrAlive cs pots
-                             | otherwise = birthOrAlive cs pots
+life :: Colony -> [(Pos,Int)] -> [Pos]
+life _ [] = []
+life cs ((p,n):pots)| p `elem` cs && n >= 2 && n <= 3 = p:life cs pots -- survives
+                    | not (elem p cs) && n == 3       = p:life cs pots -- birth
+                    | otherwise                       = life cs pots   -- dies
 
 nextGen :: GridSize -> Colony -> Colony
-nextGen gridSize colony = birthOrAlive colony (countPotentials $ accumulatedPotentialsOff gridSize colony)
+nextGen gridSize colony = life colony (countPotentials $ groupSortWrapPotentias gridSize colony)
 
 ----------------
 -- IO ACTIONS --
