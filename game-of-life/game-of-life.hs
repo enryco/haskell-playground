@@ -77,7 +77,7 @@ putFrame (width, height)= do
   goto (1,1)
   putStrLn $ "╔" ++ replicate width '═' ++ "╗"
   goto (1,height+2)
-  putStrLn $ "╚" ++ replicate height '═' ++ "╝"
+  putStrLn $ "╚" ++ replicate width '═' ++ "╝"
   sequence_ [writeat "║" (x,y)| y <- [2..(height+1)], x <- [1,width+2]]
 
 run :: GridSize -> Int -> Colony -> Colony -> IO ()
